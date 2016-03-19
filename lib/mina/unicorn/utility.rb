@@ -90,21 +90,25 @@ module Mina
       #
       def restart_unicorn
         %Q%
-          #{duplicate_unicorn}
-
-          sleep #{unicorn_restart_sleep_time}; # in order to wait for the (old) pidfile to show up
-
-          if #{old_unicorn_is_running?}; then
-            #{unicorn_send_signal('QUIT', get_old_unicorn_pid)};
-          fi;
-        %
-      end
-
-      def duplicate_unicorn
-        %Q%
           if #{unicorn_is_running?}; then
             echo "-----> Duplicating Unicorn...";
+
+            CURRENT_PID=#{get_unicorn_pid}
+            echo "-----> Old PID: $CURRENT_PID";
+
             #{unicorn_send_signal('USR2')};
+
+            t=1
+            oldbinfound="false"
+            oldbindisapeared="false"
+            while [[ $t -lt #{unicorn_restart_sleep_time}00 ]] && [[ oldbindisapeared == "false" ]] ; do
+              [[ $oldbinfound == "false" ]] && [[ -x #{old_unicorn_pid} ]] && oldbinfound="true"
+              [[ $oldbinfound == "true" ]] && [[ ! -x #{old_unicorn_pid} ]] && oldbindisapeared="true"
+              (( t += 1 ))
+            done;
+            echo "-----> New PID: #{get_unicorn_pid}";
+            [[ $CURRENT_PID == #{get_unicorn_pid} ]] && exit 1 || exit 0
+
           else
             #{start_unicorn}
           fi;
