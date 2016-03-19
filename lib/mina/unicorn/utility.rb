@@ -106,6 +106,7 @@ module Mina
               [[ $oldbinfound == "false" ]] && [[ -x #{old_unicorn_pid} ]] && oldbinfound="true"
               [[ $oldbinfound == "true" ]] && [[ ! -x #{old_unicorn_pid} ]] && oldbindisapeared="true"
               [[ $oldbindisapeared == "true" ]] && [[ -x #{unicorn_pid} ]] && newpidexists="true"
+              sleep 0.01
               (( t += 1 ))
               echo "a $oldbinfound b $oldbindisapeared c $newpidexists d $t"
             done;
