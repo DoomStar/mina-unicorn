@@ -103,9 +103,9 @@ module Mina
             oldbindisapeared="false"
             newpidexists="false"
             while [[ $t -lt #{unicorn_restart_sleep_time}00 ]] && [[ $newpidexists == "false" ]] ; do
-              [[ $oldbinfound == "false" ]] && [[ -x #{old_unicorn_pid} ]] && oldbinfound="true"
-              [[ $oldbinfound == "true" ]] && [[ ! -x #{old_unicorn_pid} ]] && oldbindisapeared="true"
-              [[ $oldbindisapeared == "true" ]] && [[ -x #{unicorn_pid} ]] && newpidexists="true"
+              [[ $oldbinfound == "false" ]] && [[ -e #{old_unicorn_pid} ]] && oldbinfound="true"
+              [[ $oldbinfound == "true" ]] && [[ ! -e #{old_unicorn_pid} ]] && oldbindisapeared="true"
+              [[ $oldbindisapeared == "true" ]] && [[ -e #{unicorn_pid} ]] && newpidexists="true"
               sleep 0.01
               (( t += 1 ))
               echo "a $oldbinfound b $oldbindisapeared c $newpidexists d $t"
